@@ -9,17 +9,23 @@ if ( $_SERVER["REQUEST_METHOD"] == "GET"){
     if ( $tipOsiguranja == "grupno"){
         // $q = "SELECT * FROM `nosioci_osiguranja` 
         // WHERE `id` = $nosilacPoliseId";
-        
+        $q = "SELECT * FROM `nosioci_osiguranja` 
+        WHERE `id` = $nosilacPoliseId LIMIT 1";
 
-        $q = "SELECT `no`.`id` AS `no_id` , `no`.`ime`,`no`.`prezime`,`no`.`broj_pasosa`, 
-        `o`.`ime`,`o`.`prezime`,`o`.`broj_pasosa` FROM `nosioci_osiguranja` AS `no`
-        LEFT JOIN `osiguranici` AS `o` ON `o`.`nosilac_osiguranja_id` = `no`.`id`
-        WHERE `no`.id =$nosilacPoliseId";
         $res = $conn->query($q);
-        $nosilac = $res -> fetch_all(MYSQLI_ASSOC);
+        $nPolise = $res->fetch_assoc();
 
+        $q =  "SELECT * FROM `osiguranici` 
+        WHERE `nosilac_osiguranja_id` = $nosilacPoliseId";
+        $res = $conn->query($q);
+        $osiguranici = $res -> fetch_all(MYSQLI_ASSOC);
 
+    }else{
+        $q = "SELECT * FROM `nosioci_osiguranja` 
+        WHERE `id` = $nosilacPoliseId LIMIT 1";
 
+        $res = $conn->query($q);
+        $nPolise = $res->fetch_assoc();
     }
     
     
@@ -38,5 +44,73 @@ if ( $_SERVER["REQUEST_METHOD"] == "GET"){
     <?php
         navigacija();
     ?>
+    <div class="container-md-xxl">
+        <div class="row justify-content-center ">
+                <div class="col-10">
+                    <div class="card mt-3">
+                        <div class="card-header pt-3">
+                            <h6>
+                                Nosilac Polise
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th scope="col">Ime i prezime</th>
+                                        <th scope="col">Broj Pasoša</th>
+                                        <th scope="col">Datum Rodjenja</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Broj Telefona</th>
+                                                                          
+                                    </tr>
+                                    <tr>
+                                        <th scope="col"><?php echo $nPolise['ime'] ." ".$nPolise['prezime'] ?></th>
+                                        <th scope="col"><?php echo $nPolise['broj_pasosa']; ?></th>
+                                        <th scope="col"><?php echo $nPolise['datum_rodjenja']; ?></th>
+                                        <th scope="col"><?php echo $nPolise['email']; ?></th>
+                                        <th scope="col"><?php echo $nPolise['broj_telefona']; ?></th>
+                                                                        
+                                    </tr>
+                                </thead>
+                               
+                                <?php if ( $tipOsiguranja == "grupno"){
+
+                                ?>
+                                <table>
+                                    <h6>Osigurana Lica</h6>
+                                    <thead>
+                                        <th scope="col">Ime i prezime</th>
+                                        <th scope="col">Broj Pasoša</th>
+                                        <th scope="col">Datum Rodjenja</th>
+                                    </thead>
+                                    <tbody>
+                                    <?php 
+                                        foreach($osiguranici as $osiguranik){
+                                            
+                                       
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $osiguranik['ime'] ." ".$nPolise['prezime'] ?></td>
+                                        <td><?php echo $osiguranik['broj_pasosa']?></td>
+                                        <td><?php echo $osiguranik['datum_rodjenja']?></td>                                    
+                                    </tr>
+                                        
+                                   
+                                    <?php
+                                        }
+                                    ?>
+                                </tbody>
+                                </table>
+                                <?php
+                                }
+                                ?>
+                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
 </body>
 </html>
